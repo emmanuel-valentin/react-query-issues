@@ -4,10 +4,12 @@ import { LabelPicker } from '../components/LabelPicker';
 import { Label } from '../interfaces/label';
 import { useIssues } from '../hooks';
 import LoadingIcon from '../../shared/components/LoadingIcon';
+import { State } from '../interfaces';
 
 export const ListView = () => {
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-  const { issueQuery } = useIssues();
+  const [state, setState] = useState<State>();
+  const { issueQuery } = useIssues({ state, labels: selectedLabels });
 
   const onLabelChange = (labelName: string) => {
     selectedLabels.includes(labelName)
@@ -18,7 +20,15 @@ export const ListView = () => {
   return (
     <div className="row mt-5">
       <div className="col-8">
-        {issueQuery.isLoading ? <LoadingIcon /> : <IssueList issues={issueQuery?.data || []}/>}
+        {issueQuery.isLoading ? (
+          <LoadingIcon />
+        ) : (
+          <IssueList
+            issues={issueQuery?.data || []}
+            state={state}
+            onStateChange={(newState?: State) => setState(newState)}
+          />
+        )}
       </div>
 
       <div className="col-4">
